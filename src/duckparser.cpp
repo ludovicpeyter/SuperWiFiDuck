@@ -311,6 +311,17 @@ namespace duckparser {
                 inString = !line_end;
             }
 
+            // STRINGLN (-> type each character, followed by ENTER)
+            else if (compare1(cmd->str, cmd->len, "STRINGLN", CASE_SENSETIVE))
+            {
+                type(line_str, line_str_len);
+
+                keyboard.pressKey(KEY_ENTER);
+                keyboard.release();
+
+                delay(10);
+            }
+
             // LED
             else if (compare1(cmd->str, cmd->len, "LED", CASE_SENSETIVE)) {
                 word_node* w = cmd->next;
