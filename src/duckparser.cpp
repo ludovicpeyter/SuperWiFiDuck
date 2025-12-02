@@ -410,6 +410,43 @@ namespace duckparser {
                 }
             }
 
+            // INJECT_MOD hit a modifier key (GUI, ALT, CTRL, SHIFT)
+            else if (compare1(cmd->str, cmd->len, "INJECT_MOD", CASE_SENSETIVE))
+            {
+                word_node *w = cmd->next; // Get the argument (GUI, ALT, etc.)
+
+                if (w)
+                {
+                    uint8_t modifier = 0;
+
+                    if (compare1(w->str, w->len, "GUI", CASE_INSENSETIVE) || compare1(w->str, w->len, "WINDOWS", CASE_INSENSETIVE))
+                    {
+                        modifier = KEY_MOD_LMETA;
+                    }
+                    else if (compare1(w->str, w->len, "CTRL", CASE_INSENSETIVE) || compare1(w->str, w->len, "CONTROL", CASE_INSENSETIVE))
+                    {
+                        modifier = KEY_MOD_LCTRL;
+                    }
+                    else if (compare1(w->str, w->len, "ALT", CASE_INSENSETIVE))
+                    {
+                        modifier = KEY_MOD_LALT;
+                    }
+                    else if (compare1(w->str, w->len, "SHIFT", CASE_INSENSETIVE))
+                    {
+                        modifier = KEY_MOD_LSHIFT;
+                    }
+
+                    if (modifier != 0)
+                    {
+                        keyboard.pressModifier(modifier); // Send Press
+                        delay(20);                        // Short hold to ensure OS sees it
+                        keyboard.release();               // Send Release
+                    }
+                }
+
+                ignore_delay = true;
+            }
+
             // Otherwise go through words and look for keys to press
             else {
                 word_node* w = wl->first;
