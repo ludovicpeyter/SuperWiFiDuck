@@ -262,7 +262,15 @@ void HIDKeyboard::send(report *k)
     debug(String(prev_report.modifiers, HEX));
     debugln("]");
 #endif // ENABLE_DEBUG
-    hid.SendReport(1, (uint8_t *)k, sizeof(report));
+    int timeout = 250;
+
+    while (!hid.SendReport(1, (uint8_t *)k, sizeof(report)))
+    {
+        delay(1);
+        timeout--;
+        if (timeout <= 0)
+            break;
+    }
 }
 
 void HIDKeyboard::pressKey(uint8_t key, uint8_t modifiers)
@@ -292,7 +300,11 @@ uint8_t HIDKeyboard::write(const char *c)
 {
     uint8_t res = press(c);
 
+    delay(5);
+
     release();
+
+    delay(5);
 
     return res;
 }
@@ -302,5 +314,8 @@ void HIDKeyboard::write(const char *str, size_t len)
     for (size_t i = 0; i < len; ++i)
     {
         i += write(&str[i]);
+
+        if (str[i] == ' ')
+            delay(10);
     }
 }
