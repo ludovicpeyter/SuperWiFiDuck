@@ -11,94 +11,110 @@
 
 #include "NeoPixel.h"
 
-namespace led {
-    NeoPixel led { NEOPIXEL_NUM, LED_PIN, NEO_GRB + NEO_KHZ800 };
+namespace led
+{
+  NeoPixel led{NEOPIXEL_NUM, LED_PIN, NEO_GRB + NEO_KHZ800};
 
-    void begin() {
-        led.begin();
-        led.show();
+  void begin()
+  {
+    led.begin();
+    led.show();
+  }
+
+  void setColor(int r, int g, int b)
+  {
+    for (size_t i = 0; i < led.numPixels(); i++)
+    {
+      led.setPixelColor(i, r, g, b);
     }
 
-    void setColor(int r, int g, int b) {
-        for (size_t i = 0; i<led.numPixels(); i++) {
-            led.setPixelColor(i, r, g, b);
-        }
-
-        led.show();
-    }
+    led.show();
+  }
 }
 
 #elif defined(DOTSTAR)
 
 #include "Adafruit_DotStar.h"
 
-namespace led {
-    Adafruit_DotStar led { DOTSTAR_NUM, DOTSTAR_DI, DOTSTAR_CI, DOTSTAR_BGR };
+namespace led
+{
+  Adafruit_DotStar led{DOTSTAR_NUM, DOTSTAR_DI, DOTSTAR_CI, DOTSTAR_BGR};
 
-    void begin() {
-        led.begin();
-        led.show();
+  void begin()
+  {
+    led.begin();
+    led.show();
+  }
+
+  void setColor(int r, int g, int b)
+  {
+    for (size_t i = 0; i < led.numPixels(); i++)
+    {
+      led.setPixelColor(i, r, g, b);
     }
 
-    void setColor(int r, int g, int b) {
-        for (size_t i = 0; i<led.numPixels(); i++) {
-            led.setPixelColor(i, r, g, b);
-        }
-
-        led.show();
-    }
+    led.show();
+  }
 }
 #elif defined(FASTLED)
 #include <FastLED.h>
 
 CRGB leds[FASTLED_NUM];
-namespace led {
-    void begin() {
-        FastLED.addLeds<WS2812B, FASTLED_PIN, GRB>(leds, FASTLED_NUM);
-        Serial.println("LEDs initialized");
+namespace led
+{
+  void begin()
+  {
+    FastLED.addLeds<WS2812B, FASTLED_PIN, GRB>(leds, FASTLED_NUM);
+    Serial.println("LEDs initialized");
+  }
+
+  void setColor(int r, int g, int b)
+  {
+    Serial.println("Setting color");
+
+    for (size_t i = 0; i < FASTLED_NUM; i++)
+    {
+      leds[i].setRGB(r, g, b);
     }
 
-    void setColor(int r, int g, int b) {
-        Serial.println("Setting color");
-        
-        for (size_t i = 0; i < FASTLED_NUM; i++) {
-            leds[i].setRGB(r, g, b);
-        }
-
-        FastLED.show();
-    }
+    FastLED.show();
+  }
 }
 
 #elif defined(LED_RGB)
 
-namespace led {
-    #include <Arduino.h>
-    
-    void begin() {
-        pinMode(LED_R, OUTPUT);
-        pinMode(LED_G, OUTPUT);
-        pinMode(LED_B, OUTPUT);
-    }
+namespace led
+{
+#include <Arduino.h>
 
-    void setColor(int r, int g, int b) {
+  void begin()
+  {
+    pinMode(LED_R, OUTPUT);
+    pinMode(LED_G, OUTPUT);
+    pinMode(LED_B, OUTPUT);
+  }
+
+  void setColor(int r, int g, int b)
+  {
 #ifdef LED_ANODE
-        r = 255 - r;
-        g = 255 - g;
-        b = 255 - b;
+    r = 255 - r;
+    g = 255 - g;
+    b = 255 - b;
 #endif
 
-        analogWrite(LED_R, r);
-        analogWrite(LED_G, g);
-        analogWrite(LED_B, b);
-    }
+    analogWrite(LED_R, r);
+    analogWrite(LED_G, g);
+    analogWrite(LED_B, b);
+  }
 }
 
 #else // if defined(NEOPIXEL)
 
-namespace led {
-    void begin() {}
+namespace led
+{
+  void begin() {}
 
-    void setColor(int r, int g, int b) {}
+  void setColor(int r, int g, int b) {}
 }
 
 #endif // if defined(NEOPIXEL)

@@ -16,31 +16,34 @@
 #include <USB.h>
 #include <USBHIDMouse.h>
 
-void setup() {
-    debug_init();
-    duckparser::beginKeyboard();
-    duckparser::beginMouse();
-    duckparser::beginConsumerControl();
-    USB.begin();
+void setup()
+{
+  debug_init();
+  duckparser::beginKeyboard();
+  duckparser::beginMouse();
+  duckparser::beginConsumerControl();
+  USB.begin();
 
-    delay(200);
-    spiffs::begin();
-    settings::begin();
-    cli::begin();
-    webserver::begin();
-    led::begin();
-    button::begin();
+  delay(200);
+  spiffs::begin();
+  settings::begin();
+  cli::begin();
+  webserver::begin();
+  led::begin();
+  button::begin();
 
-    duckscript::run(settings::getAutorun());
+  duckscript::run(settings::getAutorun());
 }
 
-void loop() {
-    webserver::update();
-    if (button::isPressed()) {
-        duckscript::run(settings::getButtonScript());
-        while(duckscript::isRunning()) {
-            
-        }
+void loop()
+{
+  webserver::update();
+  if (button::isPressed())
+  {
+    duckscript::run(settings::getButtonScript());
+    while (duckscript::isRunning())
+    {
     }
-    debug_update();
+  }
+  debug_update();
 }

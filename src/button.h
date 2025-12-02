@@ -1,9 +1,10 @@
 #pragma once
 
-namespace button {
-    void begin();
+namespace button
+{
+  void begin();
 
-    bool isPressed();
+  bool isPressed();
 
-    void touchCallback();
+  void touchCallback();
 }

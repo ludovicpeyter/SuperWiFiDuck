@@ -7,15 +7,16 @@
 
 #include <Arduino.h> // String
 
-namespace duckscript {
-    void runTest();
-    void run(String fileName);
+namespace duckscript
+{
+  void runTest();
+  void run(String fileName);
 
-    void nextLine();
-    void repeat();
-    void stopAll();
-    void stop(String fileName);
+  void nextLine();
+  void repeat();
+  void stopAll();
+  void stop(String fileName);
 
-    bool isRunning();
-    String currentScript();
+  bool isRunning();
+  String currentScript();
 };
