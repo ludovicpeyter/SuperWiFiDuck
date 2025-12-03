@@ -25,8 +25,9 @@ extern "C"
 namespace duckparser
 {
   // ====== PRIVATE ===== //
-  bool inString = false;
+  bool inStringBlock = false;
   bool inComment = false;
+  bool inCommentBlock = false;
 
   int defaultDelay = 5;
   int repeatNum = 0;
@@ -331,6 +332,20 @@ namespace duckparser
         ignore_delay = true;
       }
 
+      // REM_BLOCK (start comment block)
+      else if (inCommentBlock || compare1(cmd->str, cmd->len, "REM_BLOCK", CASE_SENSETIVE))
+      {
+        inCommentBlock = true;
+        ignore_delay = true;
+      }
+
+      // END_REM (end comment block)
+      else if (compare1(cmd->str, cmd->len, "END_REM", CASE_SENSETIVE))
+      {
+        inCommentBlock = false;
+        ignore_delay = true;
+      }
+
       // LOCALE (-> change keyboard layout)
       else if (compare1(cmd->str, cmd->len, "LOCALE", CASE_SENSETIVE))
       {
@@ -433,18 +448,25 @@ namespace duckparser
       //            }
 
       // STRING (-> type each character)
-      else if (inString || compare1(cmd->str, cmd->len, "STRING", CASE_SENSETIVE))
+      else if (inStringBlock || compare1(cmd->str, cmd->len, "STRING", CASE_SENSETIVE))
       {
-        if (inString)
+        if (inStringBlock)
         {
           type(n->str, n->len);
+          keyboard.pressKey(KEY_ENTER);
+          keyboard.release();
         }
+        else if (n->len <= cmd->len + 1)
+          inStringBlock = true;
         else
-        {
           type(line_str, line_str_len);
-        }
+      }
 
-        inString = !line_end;
+      // END_STRING (end STRING block)
+      else if (compare1(cmd->str, cmd->len, "END_STRING", CASE_SENSETIVE))
+      {
+        inStringBlock = false;
+        ignore_delay = true;
       }
 
       // STRINGLN (-> type each character, followed by ENTER)
@@ -479,6 +501,18 @@ namespace duckparser
         }
 
         led::setColor(c[0], c[1], c[2]);
+      }
+      else if (compare1(cmd->str, cmd->len, "LED_R", CASE_SENSETIVE))
+      {
+        led::setColor(255, 0, 0); // Red
+      }
+      else if (compare1(cmd->str, cmd->len, "LED_G", CASE_SENSETIVE))
+      {
+        led::setColor(0, 255, 0); // Green
+      }
+      else if (compare1(cmd->str, cmd->len, "LED_OFF", CASE_SENSETIVE))
+      {
+        led::setColor(0, 0, 0); // Off
       }
 
       // MOUSE MOVEMENT
@@ -615,7 +649,7 @@ namespace duckparser
 
       n = n->next;
 
-      if (!inString && !inComment && !ignore_delay)
+      if (!inStringBlock && !inComment && !ignore_delay)
         sleep(defaultDelay);
 
       if (line_end && (repeatNum > 0))
